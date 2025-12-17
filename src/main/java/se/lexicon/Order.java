@@ -30,6 +30,13 @@ public class Order {
         this.customer = customer;
     }
 
+    public void addProduct(Product p){
+        products.add(p);
+    }
+    public void removeProduct(Product p){
+        products.remove(p);
+    }
+
     public double getTotalPrice() {
         return totalPrice;
     }
@@ -56,11 +63,17 @@ public class Order {
 
     @Override
     public String toString() {
-        return "Order{" +
-                "id=" + id +
-                ", customer=" + customer +
-                ", totalPrice=" + calculateTotal() +
-               // ", products=" + products +
-                '}';
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("Order ID:{").append(id).append("\n");
+         stringBuilder.append("Customer: ").append(customer.getName()).append("\n");
+         stringBuilder.append("products: ").append(products.size()).append("\n");
+
+        for (Product p: products){
+            stringBuilder.append(" -name: ").append(p.getName())
+                    .append(" price:$" ).append(p.getPrice()).append("}\n") ;
+        }
+        stringBuilder.append("Total: $").append(calculateTotal());
+        return stringBuilder.toString();
+
     }
 }
