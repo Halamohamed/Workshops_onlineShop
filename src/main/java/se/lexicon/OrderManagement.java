@@ -1,20 +1,18 @@
 package se.lexicon;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class OrderManagement {
 
     Scanner scanner = new Scanner(System.in);
-
-
     Order order1 = new Order(1, new Customer(1, "Anna", "anna@email.com"));
     ArrayList<Product> productArrayList = new ArrayList<>(order1.getProducts());
 
     void main() {
         boolean run = true;
         do {
-            //order1 = addCustomer();
             menu();
             int option = scanner.nextInt();
             switch (option) {
@@ -34,8 +32,9 @@ public class OrderManagement {
                 case 5:
                     getTotalPrice();
                     break;
-                case 6: order1 = addCustomer();
-                break;
+                case 6:
+                    order1 = addCustomer();
+                    break;
                 case 0:
                     run = false;
                     IO.println("Existing... the shop!");
@@ -48,18 +47,19 @@ public class OrderManagement {
         } while (run);
     }
 
-    private Order addCustomer(){
+    private Order addCustomer() {
         int orderId = 0;
         IO.println("Enter id: ");
         int id = scanner.nextInt();
         IO.println("Enter name: ");
         String name = scanner.next();
-        IO.println("Enter email: " );
+        IO.println("Enter email: ");
         String email = scanner.next();
 
         Order order = new Order(++orderId, new Customer(id, name, email));
         return order;
     }
+
     private void getOrder() {
         //ArrayList<Product> products = new ArrayList<>(order1.getProducts());
         IO.println("Customer: " + order1.getCustomer());
@@ -80,16 +80,17 @@ public class OrderManagement {
     private void removeProduct() {
         ArrayList<Product> products = new ArrayList<>(order1.getProducts());
         boolean removed = false;
+        IO.println(order1);
         IO.println("Enter product number: ");
         int id = scanner.nextInt();
         for (Product p : products) {
             if (p.getId() == id) {
                 order1.removeProduct(p);
-                removed= true;
+                removed = true;
                 IO.println("product: " + p + " removed from order");
             }
         }
-        if(!removed){
+        if (!removed) {
             IO.println("Cannot remove the order!");
         }
     }
@@ -101,7 +102,9 @@ public class OrderManagement {
         for (Product p : products) {
             if (p.getId() == id) {
                 order1.addProduct(p);
-                IO.println("Added product: " + p + " to order");
+                order1.setTime(LocalDateTime.now());
+                LocalDateTime time = order1.getTime();
+                IO.println("Added product: " + p + " to order at: " + time.getHour() + ":" + time.getMinute());
             }
         }
     }

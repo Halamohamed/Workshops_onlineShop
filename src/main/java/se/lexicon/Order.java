@@ -1,5 +1,6 @@
 package se.lexicon;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class Order {
@@ -7,19 +8,29 @@ public class Order {
     private Customer customer;
     private double totalPrice;
     private ArrayList<Product> products;
+    private LocalDateTime time;
 
     public Order(int id, Customer customer) {
         this.id = id;
         this.customer = customer;
         this.products = new ArrayList<>();
+        this.time = LocalDateTime.now();
     }
 
     public int getId() {
         return id;
     }
 
-    public void setId(int id) {
+    private void setId(int id) {
         this.id = id;
+    }
+
+    public LocalDateTime getTime() {
+        return time;
+    }
+
+    public void setTime(LocalDateTime time) {
+        this.time = time;
     }
 
     public Customer getCustomer() {
@@ -73,6 +84,7 @@ public class Order {
                     .append(" price:$" ).append(p.getPrice()).append("}\n") ;
         }
         stringBuilder.append("Total: $").append(calculateTotal());
+        stringBuilder.append(" time: ").append(time.getHour()).append(" minutes: ").append(time.getMinute());
         return stringBuilder.toString();
 
     }
