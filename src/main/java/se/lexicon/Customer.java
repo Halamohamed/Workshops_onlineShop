@@ -4,11 +4,13 @@ public class Customer {
     private int id;
     private String name;
     private String email;
+    private String address;
 
-    public Customer(int id, String name, String email) {
+    public Customer(int id, String name, String email, String address) {
         setId(id);
         setName(name);
         setEmail(email);
+        setAddress(address);
     }
 
     public int getId() {
@@ -28,6 +30,14 @@ public class Customer {
             IO.println("Name cannot be empty!");
         }
         this.name = name;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public String getEmail() {
@@ -50,6 +60,7 @@ public class Customer {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", email='" + email + '\'' +
+                ", address='" + address + '\'' +
                 '}';
     }
 }

@@ -67,21 +67,80 @@ classDiagram
         -id:int
         -name:String
         -email:String
+        -address:String
+        
+        +Customer(id:int, name:String, email:String)
+        +getId()::int
+        +getName()::String
+        +setName(name:String)::void
+        +getEmail()::String
+        +setEmail(email:String)::void
+        +getAddress()::String
+        +setAddress(address:String)::void
     }
 
     class Product {
         -id:int
         -name:String
         -price:double
+        -category:String
+        
+        +Product(id:int, name:String, price:double, category:String)
+        +getId()::int
+        +getName()::String
+        +setName(name:String)::void
+        +getPrice()::double
+        +setPrice()::void
+        +getCategory()::String
+        +setCategory(category:String)::void
+    }
+    class OrderStatus {
+        <<enumeration>>
+        CREATED,
+        SHIPPED,
+        CONFIRMED,
+        CANCELED,
+    }
+    class OrderItem {
+        -product:Product
+        -quantity:int
+
+        +OrderItem(product:Product, quantity:int)
+        +getProduct()::Product
+        +getQuantity()::int
+        +setQuantity(quantity:int)::void
+        +getLineTotal()::double
     }
 
     class Order {
         -id:int
-        -totalPrice:double
+        -customer:Customer
+        -dicountPercentage:double
+        -status:OrderStatus
+        -orderDate: LocalDateTime
+        -items: List<OrderItem>
+        
+        +Order(id:int, customer:Customer)
+        +getId()::int
+        +getCustomer()::Customer
+        +setCustomer(customer:Customer)::void
+        +getDiscountPercentage()::double
+        +getStatus()::OrderStatus
+        +getOrderDate()::LocalDateTime
+        +setDiscountPercentage(discountPercentage:double)::void
+        +setStaus(status:OrderStatus)::void
+        +addItems(product:Product, quantity:int)::void
+        +removeItem(product:Product)::void
+        +updateItemQuantity(product:Product, quantity:int)::void
+        +updateOrderStatus(status:OrderStatus)::void
+        +calculateTotalPrice()::double
+        +getOrderSummary()::String
     }
 
     Order "0..*" --> "1" Customer : belongsTo
-    Order "1" --> "1..*" Product : contains
+    Order "1" --> "1..*" OrderItem : contains
+    Order "1" --> "1" OrderStatus : hasStatus
+    OrderItem "1" --> "1" Product : refersTo
 ````
 
 

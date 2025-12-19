@@ -6,15 +6,17 @@ import java.util.ArrayList;
 public class Order {
     private int id;
     private Customer customer;
-    private double totalPrice;
-    private ArrayList<Product> products;
-    private LocalDateTime time;
+    private ArrayList<OrderItem> itemList;
+    private double discountPercentage;
+    private OrderStatus status;
+    private LocalDateTime orderDate;
 
     public Order(int id, Customer customer) {
         this.id = id;
         this.customer = customer;
-        this.products = new ArrayList<>();
-        this.time = LocalDateTime.now();
+        this.itemList = new ArrayList<>();
+        this.discountPercentage = 0;
+        this.orderDate = LocalDateTime.now();
     }
 
     public int getId() {
@@ -26,11 +28,43 @@ public class Order {
     }
 
     public LocalDateTime getTime() {
-        return time;
+        return orderDate;
     }
 
     public void setTime(LocalDateTime time) {
-        this.time = time;
+        this.orderDate = time;
+    }
+
+    public ArrayList<OrderItem> getItemList() {
+        return itemList;
+    }
+
+    public void setItemList(ArrayList<OrderItem> itemList) {
+        this.itemList = itemList;
+    }
+
+    public double getDiscountPercentage() {
+        return discountPercentage;
+    }
+
+    public void setDiscountPercentage(double discountPercentage) {
+        this.discountPercentage = discountPercentage;
+    }
+
+    public OrderStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(OrderStatus status) {
+        this.status = status;
+    }
+
+    public LocalDateTime getOrderDate() {
+        return orderDate;
+    }
+
+    public void setOrderDate(LocalDateTime orderDate) {
+        this.orderDate = orderDate;
     }
 
     public Customer getCustomer() {
@@ -41,51 +75,83 @@ public class Order {
         this.customer = customer;
     }
 
-    public void addProduct(Product p){
-        products.add(p);
-    }
-    public void removeProduct(Product p){
-        products.remove(p);
-    }
+    public void addItem(Product p, int quantity) {
 
-    public double getTotalPrice() {
-        return totalPrice;
-    }
-
-    public void setTotalPrice(double totalPrice) {
-        this.totalPrice = totalPrice;
-    }
-
-    public ArrayList<Product> getProducts() {
-        return products;
-    }
-
-    public void setProducts(ArrayList<Product> products) {
-        this.products = products;
-    }
-    public double calculateTotal(){
-        double total= 0;
-        for (Product p : products){
-            total += p.getPrice();
+        double discountedPrice = p.getPrice() - (p.getPrice() * (getDiscountPercentage() / 100));
+        if (p.getPrice() * quantity > 1000) {
+            IO.println("You have received a discount of 10% for products over $1000!");
+            setDiscountPercentage(10);
+            p.setPrice(discountedPrice);
         }
-        totalPrice= total;
-        return totalPrice;
+
+        itemList.add(new OrderItem(p, quantity));
+    }
+
+    public void removeItem(OrderItem p) {
+        itemList.remove(p);
+    }
+
+    public double calculateTotalPrice() {
+        double total = 0;
+        for (OrderItem item : itemList) {
+            total += item.getLineTotal() * item.getQuantity();
+        }
+        if (getDiscountPercentage() > 0) {
+            total = total - (total * (getDiscountPercentage() / 100));
+        }
+
+        return total;
+    }
+
+    public void updateItemQuantity(Product product, int quantity) {
+        for (OrderItem item : itemList) {
+            if (item.getProduct().getId() == product.getId()) {
+                item.setQuantity(quantity);
+            }
+        }
     }
 
     @Override
     public String toString() {
+        return "Order{" +
+                "id=" + id +
+                ", customer=" + customer +
+                ", itemList=" + itemList +
+                ", discountPercentage=" + getDiscountPercentage() +
+                ", status=" + getStatus() +
+                ", total=" + calculateTotalPrice() +
+                ", orderDate=" + getOrderDate() +
+                '}';
+    }
+
+    public String getSummary() {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("Order ID:{").append(id).append("\n");
-         stringBuilder.append("Customer: ").append(customer.getName()).append("\n");
-         stringBuilder.append("products: ").append(products.size()).append("\n");
+        stringBuilder.append("Customer: ").append(customer.getName()).append("\n");
+        stringBuilder.append("products: ").append(itemList.size()).append("\n");
 
-        for (Product p: products){
-            stringBuilder.append(" -name: ").append(p.getName())
-                    .append(" price:$" ).append(p.getPrice()).append("}\n") ;
+        for (OrderItem p : itemList) {
+            stringBuilder.append(" -name: ").append(p.getProduct())
+                    .append(" Total price:$").append(p.getLineTotal()).append("}\n");
         }
-        stringBuilder.append("Total: $").append(calculateTotal());
-        stringBuilder.append(" time: ").append(time.getHour()).append(" minutes: ").append(time.getMinute());
+        //  stringBuilder.append("Total: $").append(calculateTotal());
+        stringBuilder.append(" time: ").append(orderDate.getHour()).append(" minutes: ").append(orderDate.getMinute());
         return stringBuilder.toString();
 
+    }
+
+
+    public void updateStatus(String choice, Product product) {
+        if (choice.equalsIgnoreCase("Y")) {
+            IO.println("You have successfully added to your order at: " + getTime());
+            if (product.getPrice() > 1000) {
+                IO.println("You have received a discount of 10% for products over $1000!");
+                setDiscountPercentage(10);
+            }
+            setStatus(OrderStatus.CONFIRMED);
+        } else {
+            IO.println("Added product: " + choice + " cancelled.");
+            setStatus(OrderStatus.CANCELLED);
+        }
     }
 }
